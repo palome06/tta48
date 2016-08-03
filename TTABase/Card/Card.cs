@@ -1,4 +1,6 @@
-﻿namespace TTA.Base.Card
+﻿using Trench.Card;
+
+namespace TTA.Base.Card
 {
     public enum TTAGenre
     {
@@ -8,12 +10,12 @@
 
     public abstract class Card : Bard
     {
-        public enum TTAGenre Genre { get; }
+        public virtual TTAGenre Genre { get; }
 
-        public int Age { get; }
+        public virtual int Age { get; }
 
-        public bool IsCivil();
+        public abstract bool IsCivil();
 
-        public bool IsMilitary();
+        public abstract bool IsMilitary();
     }
 }
