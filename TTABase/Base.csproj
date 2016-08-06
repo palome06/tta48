@@ -70,8 +70,10 @@
     <Compile Include="..\lib\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Card\Action.cs" />
-    <Compile Include="Card\Card.cs" />
+    <Compile Include="Card\Model\Action.cs" />
+    <Compile Include="Card\Model\Card.cs" />
+    <Compile Include="Card\Model\Leader.cs" />
+    <Compile Include="Card\Tuple\CivilLib.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Trench\Trench.csproj">

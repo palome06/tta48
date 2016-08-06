@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koocing", "Koocing\Koocing.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zero", "Zero\Zero.csproj", "{CF534C49-B59B-4940-9CE0-6925D4D8EF96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTAKoocing", "TTAKoocing\TTAKoocing.csproj", "{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTAZero", "TTAZero\TTAZero.csproj", "{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,22 @@ Global
 		{CF534C49-B59B-4940-9CE0-6925D4D8EF96}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF534C49-B59B-4940-9CE0-6925D4D8EF96}.Release|x86.ActiveCfg = Release|Any CPU
 		{CF534C49-B59B-4940-9CE0-6925D4D8EF96}.Release|x86.Build.0 = Release|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Debug|x86.Build.0 = Debug|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Release|x86.ActiveCfg = Release|Any CPU
+		{CCB925F9-CDB4-42F8-887E-44DB4D3CB49D}.Release|x86.Build.0 = Release|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Debug|x86.Build.0 = Debug|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Release|x86.ActiveCfg = Release|Any CPU
+		{8AE35BC5-FBE7-41E4-ADC3-896A6783EE58}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
