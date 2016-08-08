@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CE36EA04-3EA6-4010-B01C-F51DBD4986F5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{1ECE6578-D7DB-4857-A9AE-7F35A3A5F04B}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TTA.Koocing</RootNamespace>
+    <RootNamespace>Koocing</RootNamespace>
     <AssemblyName>Koocing</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,11 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Entity\NMB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SKBranch\SKBranch.cs" />
+    <Compile Include="XI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Trench\Trench.csproj">
+      <Project>{497D8831-8760-4392-B693-E824CB0B7B3B}</Project>
+      <Name>Trench</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TTABase\Base.csproj">
+      <Project>{bd84fefe-8831-403f-ba0e-29ba160830b2}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
