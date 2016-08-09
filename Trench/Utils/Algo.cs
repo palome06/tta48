@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PSD.Base.Utils
+namespace Trench.Utils
 {
     public static class Algo
     {
