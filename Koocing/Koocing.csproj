@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SKBranch\SKBranch.cs" />
     <Compile Include="VW\Ajvi.cs"/>
+    <Compile Include="VW\Aywi.cs"/>
     <Compile Include="VW\Djvi.cs"/>
     <Compile Include="VW\Djwi.cs"/>
     <Compile Include="VW\Neayer.cs"/>

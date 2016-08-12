@@ -50,13 +50,17 @@
   <ItemGroup>
     <Compile Include="Card\Bard.cs" />
     <Compile Include="Card\Supplier.cs" />
+    <Compile Include="Gamer.cs" />
     <Compile Include="Log\ClLog.cs" />
     <Compile Include="Log\ESLog.cs" />
     <Compile Include="Log\SvLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\NetworkCode.cs" />
+    <Compile Include="Rules\RuleCode.cs" />
     <Compile Include="Utils\Algo.cs" />
     <Compile Include="Utils\Diva.cs" />
     <Compile Include="Utils\Execute.cs" />
+    <Compile Include="Utils\PriorityQueue.cs" />
     <Compile Include="Utils\Range.cs" />
     <Compile Include="Utils\ReadonlySQL.cs" />
     <Compile Include="VW\IVI.cs" />

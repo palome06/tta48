@@ -11,6 +11,7 @@ namespace Trench.Log
     // Client log
     public class ClLog
     {
+        private string gameName;
         private string rName, lName;
         //private Queue<string> rq, lq;
         private BlockingCollection<string> rq, lq;
@@ -20,6 +21,8 @@ namespace Trench.Log
         private bool record;
         // record log in code
         private bool msglog;
+
+        public ClLog(string gameName) { this.gameName = gameName; }
         // whether the writing to Log stops or not
         public bool Stop { set; get; }
 
@@ -38,8 +41,8 @@ namespace Trench.Log
                 if (!Directory.Exists("./rec"))
                     Directory.CreateDirectory("./rec");
                 // TODO: reset the log title name
-                rName = string.Format("./rec/逍遥游游戏记录{0:D4}{1:D2}{2:D2}-{3:D2}{4:D2}{5:D2}({6}).txt",
-                    dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, playerId);
+                rName = string.Format("./rec/{0}{1:D4}{2:D2}{3:D2}-{4:D2}{5:D2}{6:D2}({7}).txt",
+                    gameName, dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, playerId);
                 Task.Factory.StartNew(() =>
                 {
                     using (StreamWriter sw = new StreamWriter(rName, true))
@@ -60,8 +63,8 @@ namespace Trench.Log
             {
                 if (!Directory.Exists("./log"))
                     Directory.CreateDirectory("./log");
-                lName = string.Format("./log/psd{0:D4}{1:D2}{2:D2}-{3:D2}{4:D2}{5:D2}({6}).psg",
-                    dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, playerId);
+                lName = string.Format("./log{0}{1:D4}{2:D2}{3:D2}-{4:D2}{5:D2}{6:D2}({7}).psg",
+                    gameName, dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, playerId);
                 var ass = System.Reflection.Assembly.GetExecutingAssembly().GetName();
                 int version = ass.Version.Revision;
 

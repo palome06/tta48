@@ -1,3 +1,4 @@
+using Koocing.VW;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,8 +9,9 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using PSD.Base;
-using PSD.Base.Utils;
+using Trench;
+using Trench.Log;
+using Trench.Utils;
 
 namespace PSD.PSDGamepkg.VW
 {
@@ -28,7 +30,7 @@ namespace PSD.PSDGamepkg.VW
 
         private IDictionary<ushort, Neayer> neayers;
         private IDictionary<ushort, Netcher> netchers;
-        private Base.VW.IVI vi;
+        private Trench.VW.IVI vi;
         // alive before C2AS confirmation
         private IDictionary<ushort, Neayer> n1;
 
@@ -55,7 +57,7 @@ namespace PSD.PSDGamepkg.VW
         private void ConnectDo(Socket socket, List<ushort> valids, IDictionary<ushort, Neayer> n1)
         {
             NetworkStream ns = new NetworkStream(socket);
-            string data = Base.VW.WHelper.ReadByteLine(ns);
+            string data = Trench.VW.WHelper.ReadByteLine(ns);
             //string addr = (socket.RemoteEndPoint as IPEndPoint).Address.ToString();
             if (data == null) { return; }
             else if (data.StartsWith("C2CO,"))
@@ -65,22 +67,9 @@ namespace PSD.PSDGamepkg.VW
                 string uname = blocks[2];
                 ushort uava = ushort.Parse(blocks[3]);
                 int uHope = int.Parse(blocks[4]);
-                //if (uHope == Base.Rules.RuleCode.HOPE_AKA)
-                //    uHope = 1;
-                //else if (uHope == Base.Rules.RuleCode.HOPE_AO)
-                //    uHope = 2;
-                //else if (uHope == Base.Rules.RuleCode.HOPE_IP)
-                //{
-                //    if (addrDict.ContainsKey(addr))
-                //        uHope = addrDict[addr];
-                //    else
-                //        addrDict.Add(addr, uHope = addrRank++);
-                //}
-                //else
-                //    uHope = 0;
 
                 if (n1 == null)
-                    Base.VW.WHelper.SentByteLine(ns, "C2CN,0");
+                    Trench.VW.WHelper.SentByteLine(ns, "C2CN,0");
 
                 if (valids != null)
                 {
@@ -95,10 +84,10 @@ namespace PSD.PSDGamepkg.VW
                         };
                         n1.Add(ut, ny);
                         vi.Cout(0, "[{0}]{1} joined.", ny.AUid, uname);
-                        Base.VW.WHelper.SentByteLine(ns, "C2CN," + ny.AUid);
+                        Trench.VW.WHelper.SentByteLine(ns, "C2CN," + ny.AUid);
                     }
                     else
-                        Base.VW.WHelper.SentByteLine(ns, "C2CN,0");
+                        Trench.VW.WHelper.SentByteLine(ns, "C2CN,0");
                 }
                 else // In Direct mode, exit isn't allowed, AUid isn't useful.
                 {
@@ -115,13 +104,13 @@ namespace PSD.PSDGamepkg.VW
                     foreach (Neayer nyr in n1.Values)
                     {
                         c2rm += "," + nyr.Uid + "," + nyr.Name + "," + nyr.Avatar;
-                        Base.VW.WHelper.SentByteLine(new NetworkStream(nyr.Tunnel), c2nw);
+                        Trench.VW.WHelper.SentByteLine(new NetworkStream(nyr.Tunnel), c2nw);
                     }
                     n1.Add(ny.Uid, ny);
                     vi.Cout(0, "[{0}]{1} joined.", ny.Uid, uname);
-                    Base.VW.WHelper.SentByteLine(ns, "C2CN," + ny.Uid);
+                    Trench.VW.WHelper.SentByteLine(ns, "C2CN," + ny.Uid);
                     if (c2rm.Length > 0)
-                        Base.VW.WHelper.SentByteLine(ns, "C2RM" + c2rm);
+                        Trench.VW.WHelper.SentByteLine(ns, "C2RM" + c2rm);
                 }
             }
             else if (data.StartsWith("C2QI,"))
@@ -133,7 +122,7 @@ namespace PSD.PSDGamepkg.VW
                     ++ut;
                 Netcher nc = new Netcher(uname, ut) { Tunnel = socket }; 
                 netchers.Add(ut, nc);
-                Base.VW.WHelper.SentByteLine(ns, "C2QJ," + ut);
+                Trench.VW.WHelper.SentByteLine(ns, "C2QJ," + ut);
             }
         }
         public void TcpListenerStart()
@@ -142,7 +131,7 @@ namespace PSD.PSDGamepkg.VW
             listener.Start();
         }
         // Hall path of construct Aywi, successors is the list player to join, null when indirect
-        public IDictionary<ushort, Player> Connect(Base.VW.IVI vi, bool selTeam, List<ushort> valids)
+        public IDictionary<ushort, Gamer> Connect(Trench.VW.IVI vi, bool selTeam, List<ushort> valids)
         {
             n1 = new Dictionary<ushort, Neayer>();
             neayers = new Dictionary<ushort, Neayer>();
@@ -152,23 +141,19 @@ namespace PSD.PSDGamepkg.VW
             while (n1.Count < playerCapacity)
             {
                 Socket socket = listener.AcceptSocket();
+                // TODO-tbl60: set neayer.HopeTeam but do not handle with it
                 try { ConnectDo(socket, valids, n1); } // no leave allowed.
                 catch (SocketException) { }
-                //Thread.Sleep(50);
             }
+            // TODO-tbl60: set rearrange as abstract
             IDictionary<ushort, ushort> cgmap = Rearrange(selTeam, n1);
-            IDictionary<ushort, Player> newGarden = new Dictionary<ushort, Player>();
+            IDictionary<ushort, Gamer> newGarden = new Dictionary<ushort, Gamer>();
             neayers = new Dictionary<ushort, Neayer>();
             foreach (var pair in n1)
             {
                 Neayer ny = pair.Value;
                 ushort ut = cgmap[pair.Key];
-                Player player = new Player(ny.Name, ny.Avatar, ut)
-                {
-                    Team = (ut % 2 == 0) ? 2 : 1,
-                    IsAlive = true,
-                    AUid = pair.Key
-                };
+                Gamer player = new Gamer(ny.Name, ny.Avatar, pair.Key, ut);
                 ny.Uid = ut;
                 newGarden.Add(ut, player);
                 neayers.Add(ut, ny);
@@ -176,12 +161,12 @@ namespace PSD.PSDGamepkg.VW
             foreach (var pair in neayers)
             {
                 StartListenTask(() => KeepOnListenRecv(pair.Value));
-                Base.VW.WHelper.SentByteLine(new NetworkStream(pair.Value.Tunnel), "C2SA,0");
+                Trench.VW.WHelper.SentByteLine(new NetworkStream(pair.Value.Tunnel), "C2SA,0");
             }
             foreach (var pair in netchers.ToList())
             {
                 StartListenTask(() => KeepOnListenRecv(pair.Value));
-                Base.VW.WHelper.SentByteLine(new NetworkStream(pair.Value.Tunnel), "C2SA,0");
+                Trench.VW.WHelper.SentByteLine(new NetworkStream(pair.Value.Tunnel), "C2SA,0");
             }
             StartListenTask(() => KeepOnListenSend());
             return newGarden;
@@ -211,11 +196,11 @@ namespace PSD.PSDGamepkg.VW
                 {
                     Neayer ny = pair.Value;
                     string name = "";
-                    if (ny.HopeTeam == Base.Rules.RuleCode.HOPE_AKA)
+                    if (ny.HopeTeam == Trench.Rules.RuleCode.HOPE_AKA)
                         name = "AKA";
-                    else if (ny.HopeTeam == Base.Rules.RuleCode.HOPE_AO)
+                    else if (ny.HopeTeam == Trench.Rules.RuleCode.HOPE_AO)
                         name = "AO";
-                    else if (ny.HopeTeam == Base.Rules.RuleCode.HOPE_IP)
+                    else if (ny.HopeTeam == Trench.Rules.RuleCode.HOPE_IP)
                         name = (ny.Tunnel.RemoteEndPoint as IPEndPoint).Address.ToString();
                     else
                         hope0.Add(ny.Uid);
@@ -227,7 +212,7 @@ namespace PSD.PSDGamepkg.VW
                     }
                 }
                 //List<List<ushort>> rests = dictCount.Values.Where(p => p.Count > 1).ToList();
-                var pq = new DS.PriorityQueue<List<ushort>>(new DS.ListSizeComparer<ushort>());
+                var pq = new PriorityQueue<List<ushort>>(new ListSizeComparer<ushort>());
                 foreach (var list in dictCount.Values)
                 {
                     if (list.Count > 1)
@@ -313,7 +298,7 @@ namespace PSD.PSDGamepkg.VW
             catch (SocketException) { return 0; }
 
             NetworkStream ns = new NetworkStream(socket);
-            string data = Base.VW.WHelper.ReadByteLine(ns);
+            string data = Trench.VW.WHelper.ReadByteLine(ns);
             if (data == null) { return 0; }
             else if (data.StartsWith("C2QI,")) // Watcher case
             {
@@ -326,8 +311,8 @@ namespace PSD.PSDGamepkg.VW
                     ++ut;
                 Netcher nc = new Netcher(uname, ut) { Tunnel = socket };
                 netchers.Add(ut, nc);
-                Base.VW.WHelper.SentByteLine(ns, "C2QJ," + ut);
-                Base.VW.WHelper.SentByteLine(ns, "C2SA,0");
+                Trench.VW.WHelper.SentByteLine(ns, "C2QJ," + ut);
+                Trench.VW.WHelper.SentByteLine(ns, "C2SA,0");
                 return ut;
             }
             else if (data.StartsWith("C4CR,")) // Reconnect case
@@ -350,14 +335,14 @@ namespace PSD.PSDGamepkg.VW
                 };
                 neayers[ny.Uid] = ny;
                 StartListenTask(() => KeepOnListenRecv(ny));
-                Base.VW.WHelper.SentByteLine(ns, "C4CS," + ny.Uid);
+                Trench.VW.WHelper.SentByteLine(ns, "C4CS," + ny.Uid);
                 ny.Alive = true;
                 WakeTunnelInWaiting(ny.AUid, ny.Uid);
                 return ny.Uid;
             }
             else
             {
-                Base.VW.WHelper.SentByteLine(ns, "C2CN,0");
+                Trench.VW.WHelper.SentByteLine(ns, "C2CN,0");
                 return 0;
             }
         }
@@ -375,7 +360,7 @@ namespace PSD.PSDGamepkg.VW
                 string line = "";
                 try
                 {
-                    line = Base.VW.WHelper.ReadByteLine(new NetworkStream(ny.Tunnel));
+                    line = Trench.VW.WHelper.ReadByteLine(new NetworkStream(ny.Tunnel));
                     if (string.IsNullOrEmpty(line)) { ny.Tunnel.Close(); OnLoseConnection(ny.Uid); break; }
                 }
                 catch (IOException) { OnLoseConnection(ny.Uid); break; }
@@ -388,7 +373,7 @@ namespace PSD.PSDGamepkg.VW
                 }
                 else if (!string.IsNullOrEmpty(line) && !IsHangedUp)
                 {
-                    inf0Msgs.Add(new Base.VW.Msgs(line, ny.Uid, 0), ctoken.Token);
+                    inf0Msgs.Add(new Trench.VW.Msgs(line, ny.Uid, 0), ctoken.Token);
                     //Log.Logger(0 + "<" + ny.Uid + ":" + line);
                 }
                 else
@@ -399,13 +384,13 @@ namespace PSD.PSDGamepkg.VW
         {
             while (true)
             {
-                Base.VW.Msgs msg = infNMsgs.Take(ctoken.Token);
+                Trench.VW.Msgs msg = infNMsgs.Take(ctoken.Token);
                 if (msg.From == 0) // send won't be blocked
                 {
                     if (neayers.ContainsKey(msg.To) && neayers[msg.To].Alive)
                     {
                         Log.Logger(0 + ">" + msg.To + ";" + msg.Msg);
-                        try { Base.VW.WHelper.SentByteLine(new NetworkStream(neayers[msg.To].Tunnel), msg.Msg); }
+                        try { Trench.VW.WHelper.SentByteLine(new NetworkStream(neayers[msg.To].Tunnel), msg.Msg); }
                         catch (IOException) { OnLoseConnection(msg.To); break; }
                     }
                     else
@@ -416,12 +401,12 @@ namespace PSD.PSDGamepkg.VW
             }
         }
         // Watcher case, won't cause exception to notify leaves
-        private bool KeepOnListenSendWatcher(Base.VW.Msgs msg)
+        private bool KeepOnListenSendWatcher(Trench.VW.Msgs msg)
         {
             try
             {
                 if (netchers.ContainsKey(msg.To))
-                    Base.VW.WHelper.SentByteLine(new NetworkStream(netchers[msg.To].Tunnel), msg.Msg);
+                    Trench.VW.WHelper.SentByteLine(new NetworkStream(netchers[msg.To].Tunnel), msg.Msg);
                 return true;
             }
             catch (IOException)
@@ -465,13 +450,13 @@ namespace PSD.PSDGamepkg.VW
             // Awake the neayer
             if (neayers.ContainsKey(suid))
                 neayers[suid].Alive = true;
-            Base.VW.WHelper.SentByteLine(cns, "C3RA," + auid);
+            Trench.VW.WHelper.SentByteLine(cns, "C3RA," + auid);
             // Check whether all members has gathered.
             if (GetAliveNeayersCount() == playerCapacity)
             {
                 // OK, all gathered.
                 BCast("H0RK,0");
-                Base.VW.WHelper.SentByteLine(cns, "C3RV,0");
+                Trench.VW.WHelper.SentByteLine(cns, "C3RV,0");
                 IsHangedUp = false;
             }
         }
@@ -512,7 +497,7 @@ namespace PSD.PSDGamepkg.VW
         public void Report(string message)
         {
             if (cns != null && !IsLegecy)
-                Base.VW.WHelper.SentByteLine(cns, message);
+                Trench.VW.WHelper.SentByteLine(cns, message);
         }
         // terminate the room
         public void RoomGameEnd()
@@ -533,9 +518,9 @@ namespace PSD.PSDGamepkg.VW
         #region Fake Pipe
         public void StartFakePipe(int roomNum)
         {
-            TcpClient client = new TcpClient("127.0.0.1", Base.NetworkCode.HALL_PORT);
+            TcpClient client = new TcpClient("127.0.0.1", Trench.Rules.NetworkCode.HALL_PORT);
             NetworkStream tcpStream = client.GetStream();
-            Base.VW.WHelper.SentByteLine(tcpStream, "C3HI," + roomNum);
+            Trench.VW.WHelper.SentByteLine(tcpStream, "C3HI," + roomNum);
             cns = tcpStream;
         }
         /// <summary>
@@ -544,14 +529,14 @@ namespace PSD.PSDGamepkg.VW
         /// <param name="roomNum">the room number/param>
         public void ShutdownFakePipe(int roomNum)
         {
-            Base.VW.WHelper.SentByteLine(cns, "C3HX," + roomNum);
+            Trench.VW.WHelper.SentByteLine(cns, "C3HX," + roomNum);
             // TODO: notify users that has joined the room
             // QUESTION: how to know who has died yet
             if (n1 != null)
             {
                 foreach (Neayer ny in n1.Values)
                 {
-                    try { Base.VW.WHelper.SentByteLine(new NetworkStream(ny.Tunnel), "C2SB,0"); }
+                    try { Trench.VW.WHelper.SentByteLine(new NetworkStream(ny.Tunnel), "C2SB,0"); }
                     catch (SocketException) { }
                     catch (ObjectDisposedException) { }
                 }
@@ -570,25 +555,25 @@ namespace PSD.PSDGamepkg.VW
         private void StartListenTask(Action action)
         {
             Action<Exception> ae = (e) => { if (Log != null) Log.Logger(e.ToString()); };
-            Task.Factory.StartNew(() => XI.SafeExecute(action, ae), ctoken.Token,
-                TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Task.Factory.StartNew(() => Trench.Utils.Execute.SafeExecute(action, ae),
+                ctoken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
         #endregion Fake Pipe
-
+        // player capacity, won't change during the game (volitate number would be solved in Cente)
         private readonly int playerCapacity;
         // message queue of handling inf
-        private BlockingCollection<Base.VW.Msgs> inf0Msgs;
+        private BlockingCollection<Trench.VW.Msgs> inf0Msgs;
         // only for send
-        private BlockingCollection<Base.VW.Msgs> infNMsgs;
+        private BlockingCollection<Trench.VW.Msgs> infNMsgs;
         // handler of Y message, inits from XI Instance.
         private Action<string, ushort> yMsgHandler;
 
-        public Aywi(int port, int playerCapacity, Log log, Action<string, ushort> yHandler)
+        public Aywi(int port, int playerCapacity, SvLog log, Action<string, ushort> yHandler)
         {
             this.port = port;
             this.playerCapacity = playerCapacity;
-            inf0Msgs = new BlockingCollection<Base.VW.Msgs>(new ConcurrentQueue<Base.VW.Msgs>());
-            infNMsgs = new BlockingCollection<Base.VW.Msgs>(new ConcurrentQueue<Base.VW.Msgs>());
+            inf0Msgs = new BlockingCollection<Trench.VW.Msgs>(new ConcurrentQueue<Trench.VW.Msgs>());
+            infNMsgs = new BlockingCollection<Trench.VW.Msgs>(new ConcurrentQueue<Trench.VW.Msgs>());
 
             IsTalkSilence = false;
             IsLegecy = false;
@@ -602,7 +587,7 @@ namespace PSD.PSDGamepkg.VW
         {
             if (me == 0)
             {
-                Base.VW.Msgs rvDeq = inf0Msgs.Take();
+                Trench.VW.Msgs rvDeq = inf0Msgs.Take();
                 if (rvDeq.From == from && !string.IsNullOrEmpty(rvDeq.Msg))
                 {
                     Log.Logger("=" + from + ":" + rvDeq.Msg);
@@ -612,7 +597,7 @@ namespace PSD.PSDGamepkg.VW
             return null;
         }
         // receive each message during the process
-        public Base.VW.Msgs RecvInfRecv()
+        public Trench.VW.Msgs RecvInfRecv()
         {
             return inf0Msgs.Take();
         }
@@ -620,7 +605,7 @@ namespace PSD.PSDGamepkg.VW
         public void Send(string msg, ushort me, ushort to)
         {
             if (me == 0)
-                infNMsgs.Add(new Base.VW.Msgs(msg, me, to));
+                infNMsgs.Add(new Trench.VW.Msgs(msg, me, to));
         }
         // Send raw message to multiple $to
         public void Send(string msg, IEnumerable<ushort> tos)
