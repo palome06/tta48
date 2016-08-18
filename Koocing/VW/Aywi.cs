@@ -13,7 +13,7 @@ using Trench;
 using Trench.Log;
 using Trench.Utils;
 
-namespace PSD.PSDGamepkg.VW
+namespace Koocing.VW
 {
     // Server In it
     public class Aywi : Trench.VW.IWISV
@@ -46,11 +46,16 @@ namespace PSD.PSDGamepkg.VW
         // indicate whether the room has exited gracefully, won't report lose connection
         private bool IsLegecy { set; get; }
 
+        private Trench.Log.SvLog Log { set; get; }
+
+        #region Uid assignee
         // userid counter, only used in direct mode
         private ushort curCount = 1;
         private ushort watchCount = 1001;
-
-        private Trench.Log.SvLog Log { set; get; }
+        public bool IsPlayer(ushort gid) { return gid > 0 && gid < 1000; }
+        public bool IsWatcher(ushort gid) { return gid > 1000 && gid < 2000; }
+        public bool IsGod(ushort gid) { return gid == 0 || gid == 1000; }
+        #endregion Uid assignee
 
         #region Network of Player
         // n1 is a temporary version of neayers (uid not rearranged), netchers is usable

@@ -11,5 +11,10 @@ namespace Trench.Utils
             catch (System.OperationCanceledException) { throw; }
             catch (Exception ex) { handler(ex); Console.WriteLine(ex.ToString()); }
         }
+
+        public static void StartTask(Action action, Log log)
+        {
+            
+        }
     }
 }
